@@ -1,2 +1,3 @@
 *.dwarf
+func
 ruby-hello/*
