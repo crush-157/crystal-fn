@@ -1,4 +1,4 @@
 schema_version: 20180708
 name: crystal-hello
-version: 0.0.18
+version: 0.0.20
 runtime: docker
