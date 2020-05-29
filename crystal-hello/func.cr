@@ -24,9 +24,11 @@ class FnHelper
 
   def handle(&block : JSON::Any -> String)
     server = HTTP::Server.new do |context|
-      body = context.request.body.try(&.gets_to_end) || "{}"
+      STDERR.puts "body snatching"
+      body = context.request.body.try(&.gets_to_end)
+      body = "{}" if body.try(&.empty?) || body.nil?
       context.response.content_type = "application/json"
-      context.response.print block.call JSON.parse body
+      body.try { |b| context.response.print block.call JSON.parse b }
     end
     server.bind linked_socket
     server.listen
@@ -37,7 +39,9 @@ class FnHelper
   end
 end
 
-FnHelper.handle do |input|
+my_proc = ->(input : JSON::Any) do
   name = input["name"]? || "world"
   %({"message": "Hello #{name}"})
 end
+
+FnHelper.handle &my_proc
