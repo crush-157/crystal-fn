@@ -24,7 +24,6 @@ class FnHelper
 
   def handle(&block : JSON::Any -> String)
     server = HTTP::Server.new do |context|
-      STDERR.puts "body snatching"
       body = context.request.body.try(&.gets_to_end)
       body = "{}" if body.try(&.empty?) || body.nil?
       context.response.content_type = "application/json"
