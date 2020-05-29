@@ -4,8 +4,9 @@ require "http/server"
 require "json"
 
 class FnHelper
-  getter(url : String) { ENV.fetch "FN_LISTENER", "unix:/tmp/iofs/lsnr.sock" }
-  getter(socket_path : String) { url[5..] }
+  getter(socket_path : String) do
+    ENV.["FN_LISTENER"].try(&.[5..]) || "unix:/tmp/iofs/lsnr.sock"
+  end
 
   def handle(&block : JSON::Any -> String)
     server = HTTP::Server.new do |context|
@@ -14,6 +15,7 @@ class FnHelper
       context.response.content_type = "application/json"
       body.try { |b| context.response.print block.call JSON.parse b }
     end
+    STDERR.puts "socket_path: #{socket_path}"
     server.bind UNIXServer.new socket_path
     server.listen
   end
