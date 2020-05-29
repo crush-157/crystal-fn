@@ -22,17 +22,22 @@ class FnHelper
     end
   end
 
-  def handle
+  def handle(&block : JSON::Any -> String)
     server = HTTP::Server.new do |context|
-      body = context.request.body.try(&.gets_to_end)
-      STDERR.puts "server received body: #{body}"
+      body = context.request.body.try(&.gets_to_end) || "{}"
       context.response.content_type = "application/json"
-      context.response.print body
+      context.response.print block.call JSON.parse body
     end
     server.bind linked_socket
     server.listen
   end
+
+  def self.handle(&block : JSON::Any -> String)
+    FnHelper.new.handle &block
+  end
 end
 
-f = FnHelper.new
-f.handle
+FnHelper.handle do |input|
+  name = input["name"]? || "world"
+  %({"message": "Hello #{name}"})
+end
