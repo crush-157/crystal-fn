@@ -13,13 +13,18 @@ class FnHelper
     UNIXServer.new private_socket_path
   end
 
-  getter(linked_socket : UNIXServer) do
-    private_socket.tap do |ps|
-      ps.path.try do |path|
-        File.chmod(path, 0o666)
-        FileUtils.ln_s(File.basename(path), socket_path)
-      end
+  def link_socket_file
+    File.chmod(private_socket_path, 0o666)
+    FileUtils.ln_s(File.basename(private_socket_path), socket_path)
+    @linked = true
+  end
+
+  def linked_socket
+    unless linked?
+      private_socket
+      link_socket_file
     end
+    private_socket
   end
 
   def handle(&block : JSON::Any -> String)
