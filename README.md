@@ -22,15 +22,14 @@ capabilities of an FDK, and it is strongly preferred to use an FDK if one
 is available.
 
 ## Example Overview
-
-### Reverse big bang
+### Reverse big bang
 The example walk through takes a "reverse - big - bang" approach,
 starting with an "exploded view" which is admittedly verbose (but makes it
 easy to see all the parts of the machinery separately).
 
 Then the code will be refactored to make it more concise.
 
-### http-stream
+### http-stream
 Note that the Fn server communicates with the Function in a container
 using HTTP over UNIX sockets ("http - stream").
 
@@ -50,7 +49,9 @@ Before you start, please ensure that you have the following:
 - Logging configured and tested.
 - An app created to deploy your function to (e.g. `no-fdk`)
 
-## Building the Example
+## Building the Example
+
+
 ### Create `func.cr` and `Dockerfile`
   1. Create a directory for your function (e.g. `crystal-hello`).
   2. In that directory create a minimal file for your function `func.cr`:
@@ -162,7 +163,9 @@ $ echo '{"name":"Marvin"}' | fn invoke no-fdk crystal-hello
 {"message": "Hello Marvin"}
 ```
 
-###Shrink the Code #1
+
+### Shrink the Code #1
+
 The code can be shrunk slightly by removing the `linked_socket` method:
 
 ```
@@ -215,7 +218,9 @@ FnHelper.handle &my_proc
 ```
 (see [tighter-func.cr](./crystal-hello/tighter-func.cr))
 
-###Shrink the Code #2
+
+### Shrink the Code #2
+
 The `private_socket_path` piece is still a bit ugly though :-(
 
 Depending on how fast your helper starts listening you _may_ be able to skip it.
